@@ -28,7 +28,11 @@ export default function App() {
   dealWithTextChange = (value) => {
     const asYouType = new AsYouType();
     asYouType.input(value);
-    setCountryCode2(asYouType.country);
+
+    if (asYouType.country != undefined) {
+      setCountryCode2(asYouType.country);
+    }
+
     setPhoneNumber(asYouType.formattedOutput);
     setCallingCode(asYouType.countryCallingCode);
   };
