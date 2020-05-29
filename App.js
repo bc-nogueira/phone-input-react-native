@@ -8,52 +8,60 @@ import {
 } from "libphonenumber-js";
 
 export default function App() {
-  const [countryCode2, setCountryCode2] = useState("US");
+  const [countryCode, setCountryCode] = useState("US");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [callingCode, setCallingCode] = useState("");
+  const asYouTypeInstance = useRef(null);
 
-  dealWithCountryChange = (country) => {
+  useEffect(() => {
+    asYouTypeInstance.current = new AsYouType();
+    
+    return () => {
+      asYouTypeInstance.current = null;
+    }
+  }, [phoneNumber])
+
+  function handleCountrySelect(country) {
     const newCallingCode = getCountryCallingCode(country.cca2);
     const newPhoneNumber = phoneNumber.replace(
       `+${callingCode}`,
       `+${newCallingCode}`
     );
-    setCountryCode2(country.cca2);
+    setCountryCode(country.cca2);
     setPhoneNumber(
       parsePhoneNumberFromString(newPhoneNumber).formatInternational()
     );
     setCallingCode(newCallingCode);
   };
 
-  dealWithTextChange = (value) => {
-    const asYouType = new AsYouType();
-    asYouType.input(value);
+  function handleNumberChange(value) {
+    asYouTypeInstance.current.input(value);
 
-    if (asYouType.country != undefined) {
-      setCountryCode2(asYouType.country);
+    if (asYouTypeInstance.current.country != undefined) {
+      setCountryCode(asYouTypeInstance.current.country);
     }
 
-    setPhoneNumber(asYouType.formattedOutput);
-    setCallingCode(asYouType.countryCallingCode);
+    setPhoneNumber(asYouTypeInstance.current.formattedOutput);
+    setCallingCode(asYouTypeInstance.current.countryCallingCode);
   };
 
   return (
     <View style={styles.container}>
       <CountryPicker
-        countryCode={countryCode2}
+        countryCode={countryCode}
         withFilter
         withCallingCode
         withFlagButton
-        onSelect={this.dealWithCountryChange}
+        onSelect={handleCountrySelect}
       />
       <TextInput
         placeholder="Insert phone number"
         value={phoneNumber}
         keyboardType="phone-pad"
-        onChangeText={this.dealWithTextChange}
+        onChangeText={handleNumberChange}
       />
 
-      <Text>Country code: {countryCode2}</Text>
+      <Text>Country code: {countryCode}</Text>
       <Text>Phone number: {phoneNumber}</Text>
       <Text>Calling code: {callingCode}</Text>
     </View>
