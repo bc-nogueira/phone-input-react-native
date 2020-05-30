@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, View, Text, TextInput, Alert } from "react-native";
 import CountryPicker from "react-native-country-picker-modal";
 import {
@@ -37,7 +37,7 @@ export default function App() {
   function handleNumberChange(value) {
     asYouTypeInstance.current.input(value);
 
-    if (asYouTypeInstance.current.country != undefined) {
+    if (asYouTypeInstance.current.country !== undefined) {
       setCountryCode(asYouTypeInstance.current.country);
     }
 
