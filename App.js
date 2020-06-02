@@ -1,11 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, Text, TextInput, Alert } from 'react-native';
 import CountryPicker from 'react-native-country-picker-modal';
-import {
-  parsePhoneNumberFromString,
-  AsYouType,
-  getCountryCallingCode,
-} from 'libphonenumber-js';
+import { AsYouType, getCountryCallingCode } from 'libphonenumber-js';
 
 export default function App() {
   const [countryCode, setCountryCode] = useState('US');
