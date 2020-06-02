@@ -1,38 +1,39 @@
-import React, { useEffect, useRef, useState } from "react";
-import { StyleSheet, View, Text, TextInput, Alert } from "react-native";
-import CountryPicker from "react-native-country-picker-modal";
+import React, { useEffect, useRef, useState } from 'react';
+import { StyleSheet, View, Text, TextInput, Alert } from 'react-native';
+import CountryPicker from 'react-native-country-picker-modal';
 import {
   parsePhoneNumberFromString,
   AsYouType,
   getCountryCallingCode,
-} from "libphonenumber-js";
+} from 'libphonenumber-js';
 
 export default function App() {
-  const [countryCode, setCountryCode] = useState("US");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [callingCode, setCallingCode] = useState("");
+  const [countryCode, setCountryCode] = useState('US');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [callingCode, setCallingCode] = useState('');
   const asYouTypeInstance = useRef(null);
 
   useEffect(() => {
     asYouTypeInstance.current = new AsYouType();
-    
+
     return () => {
       asYouTypeInstance.current = null;
-    }
-  }, [phoneNumber])
+    };
+  }, [phoneNumber]);
 
   function handleCountrySelect(country) {
     const newCallingCode = getCountryCallingCode(country.cca2);
     const newPhoneNumber = phoneNumber.replace(
-      `+${callingCode}`,
-      `+${newCallingCode}`
+      phoneNumber === '' ? '' : `+${callingCode}`,
+      `+${getCountryCallingCode(country.cca2)}`
     );
+
+    asYouTypeInstance.current.input(newPhoneNumber);
+
     setCountryCode(country.cca2);
-    setPhoneNumber(
-      parsePhoneNumberFromString(newPhoneNumber).formatInternational()
-    );
+    setPhoneNumber(asYouTypeInstance.current.formattedOutput);
     setCallingCode(newCallingCode);
-  };
+  }
 
   function handleNumberChange(value) {
     asYouTypeInstance.current.input(value);
@@ -43,7 +44,7 @@ export default function App() {
 
     setPhoneNumber(asYouTypeInstance.current.formattedOutput);
     setCallingCode(asYouTypeInstance.current.countryCallingCode);
-  };
+  }
 
   return (
     <View style={styles.container}>
@@ -71,8 +72,8 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
